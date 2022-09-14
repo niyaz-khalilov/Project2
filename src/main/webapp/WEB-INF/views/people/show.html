@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p th:text="${person.getFullName() + ', ' + person.getBirthdayDate()}">VALUE</p>
+<div th:if="${notBook}">
+    <span>У данного пользователя нет книг</span>
+</div>
+<div th:if="${listOfBook}">
+    <span>У данного пользователя есть следующие книги:</span>
+    <div th:each="book : ${listOfBook}">
+        <a th:href="@{/books/{id}(id=${book.getBookId()})}"
+           th:text="${book.getTittle() + ', ' + book.getAuthor() + ', ' + book.getIssueYear()}">book
+        </a>
+    </div>
+</div>
+<hr/>
+<form th:action="@{/people/{id} (id=${person.getPersonId()})}" th:method="DELETE" >
+    <button>Удалить</button>
+</form>
+<br/>
+<form th:action="@{/people/{id}/edit (id=${person.getPersonId()})}" th:method="GET" >
+    <button>Редактировать</button>
+</form>
+<br/>
+<br/>
+<a href="/library">Вернуться на главную</a>
+</body>
+</html>
