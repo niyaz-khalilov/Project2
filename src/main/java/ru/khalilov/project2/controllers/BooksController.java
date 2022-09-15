@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.khalilov.project2.services.BookService;
 import ru.khalilov.project2.services.PersonService;
 import ru.khalilov.project2.models.Book;
@@ -27,22 +26,15 @@ public class BooksController {
         this.personService = personDAO;
     }
 
-    @PostMapping("/increase")
-    public String increasePage(Model model, final RedirectAttributes redirectAttributes) {
-        Object page = (Integer) model.getAttribute("page");
-        redirectAttributes.addFlashAttribute("page", page);
-        return "redirect:/books";
-    }
-
-    @GetMapping()
+      @GetMapping()
     public String booksPage(Model model, @RequestParam(value = "page", required = false) Integer page,
+                            @RequestParam(value = "count", required = false) Integer count,
                             @RequestParam(value = "sortBy", required = false) String sortBy) {
-        if (page == null || page <= 0) {
-            page = 1;
-        }
-        List<Book> books = bookService.showAllBooks(page, sortBy);
+        List<Book> books = bookService.showAllBooks(page, count, sortBy);
         model.addAttribute("books", books);
         model.addAttribute("page", page);
+        model.addAttribute("count", count);
+        model.addAttribute("sortBy", sortBy);
         return "books/index";
     }
 
@@ -104,5 +96,17 @@ public class BooksController {
     public String releaseBookFromPeople(@PathVariable("id") int bookId) {
         bookService.releaseBook(bookId);
         return "redirect:/books/" + bookId;
+    }
+
+    @GetMapping("/search")
+    public String bookSearching() {
+        return "books/search";
+    }
+
+    @PostMapping("/search")
+    public String makeSearch(@RequestParam("query") String query, Model model) {
+        List<Book> books = bookService.findByTittleLike(query);
+        model.addAttribute("books", books);
+        return "books/search";
     }
 }

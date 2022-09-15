@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.khalilov.project2.models.Book;
 import ru.khalilov.project2.models.Person;
 import ru.khalilov.project2.repositories.PersonRepository;
+
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +32,8 @@ public class PersonService {
         return personRepository.findAll();
     }
 
-    public Person showPerson (int id) {
-       return personRepository.findById(id).orElse(null);
+    public Person showPerson(int id) {
+        return personRepository.findById(id).orElse(null);
     }
 
     @Transactional
@@ -48,7 +50,15 @@ public class PersonService {
     public List<Book> getBooks(int id) {
         Optional<Person> person = personRepository.findBooksOfPerson(id).stream().findAny();
         if (person.isPresent()) {
-            return person.get().getBooks();
+            List<Book> books = person.get().getBooks();
+            for (Book book : books) {
+                if (book.getRentDate()!= null) {
+                    long diffInMillies = Math.abs(book.getRentDate().getTime() - new Date().getTime());
+                    if (diffInMillies > 864000000)
+                        book.setExpired(true);
+                }
+            }
+            return books;
         } else {
             return Collections.emptyList();
         }
@@ -62,6 +72,10 @@ public class PersonService {
     }
 
     public Person checkPersonExisting(String string) {
-     return personRepository.findPersonByFullName(string).orElse(null);
+        return personRepository.findPersonByFullName(string).orElse(null);
+    }
+
+    public List<Person> findByTittleLike(String query) {
+        return personRepository.findByFullNameStartingWith(query);
     }
 }

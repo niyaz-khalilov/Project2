@@ -32,5 +32,8 @@ public class Book {
     @Max(value = 2022, message = "Введите действительную дату рождения")
     private int issueYear;
     @Column(name = "date_of_rent")
+    @Temporal(TemporalType.DATE)
     private Date rentDate;
+    @Transient
+    private boolean expired;
 }

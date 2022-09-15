@@ -5,18 +5,31 @@
     <title>Title</title>
 </head>
 <body>
+<form th:method="GET" th:action="@{/books}">
+    <label for="count">Сколько книг отображать на странице ?</label>
+    <input id="count" type="text" th:name="count"/>
+    <label for="page">Какую страницу отобразить ?</label>
+    <input id="page" type="text" th:name="page"/>
+    <label for="sortBy">По чему сортировать человека ?</label>
+    <select th:name="sortBy" id="sortBy">
+        <option value="empty">-</option>
+        <option value="tittle">Названию</option>
+        <option value="author">Автору</option>
+        <option value="issueYear">Году выпуска</option>
+    </select>
+    <br/>
+    <input type="submit" value="Выполнить">
+</form>
 <div th:each="book : ${books}">
     <a th:href="@{/books/{id}(id=${book.getBookId()})}"
        th:text="${book.getTittle() + ', ' + book.getAuthor() + ', ' + book.getIssueYear()}">user</a>
 </div>
-<form th:method="POST" th:action="@{/books/increase}" th:object="${page}">
-    <input type="submit" value="Следующая страницы"/>
-</form>
 <hr/>
 <form action="/books/new">
     <button>Создать!</button>
 </form>
 <br/>
+<a href="/books/search">Найти книгу</a>
 <br/>
 <a href="/library">Вернуться на главную</a>
 </body>

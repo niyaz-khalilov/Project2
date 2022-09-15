@@ -15,6 +15,7 @@
         <a th:href="@{/books/{id}(id=${book.getBookId()})}"
            th:text="${book.getTittle() + ', ' + book.getAuthor() + ', ' + book.getIssueYear()}">book
         </a>
+        <span th:if="${book.isExpired()}">Данная книга просрочена</span>
     </div>
 </div>
 <hr/>

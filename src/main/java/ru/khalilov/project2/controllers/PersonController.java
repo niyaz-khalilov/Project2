@@ -80,4 +80,16 @@ public class PersonController {
         personService.update(person);
         return "redirect:/people";
     }
+
+    @GetMapping("/search")
+    public String bookSearching() {
+        return "people/search";
+    }
+
+    @PostMapping("/search")
+    public String makeSearch(@RequestParam("query") String query, Model model) {
+        List<Person> people = personService.findByTittleLike(query);
+        model.addAttribute("people", people);
+        return "people/search";
+    }
 }

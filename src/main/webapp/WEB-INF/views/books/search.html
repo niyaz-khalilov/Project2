@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:method="POST" th:action="@{/people/search}">
+  <label for="query">Введите поисковой запрос</label>
+  <input id="query" type="text" th:name="query"/>
+  <br/>
+  <input type="submit" value="Найти">
+</form>
+<div th:if="${books}">
+    <p th:each="book : ${books}">
+        <a th:href="@{/book/{id}(id=${book.getBookId})}"
+           th:text="${book.getTittle() + ', ' + book.getAuthor() + ', ' + book.getIssueYear()}">user</a>
+    </p>
+</div>
+</body>
+</html>

@@ -9,6 +9,7 @@ import ru.khalilov.project2.models.Book;
 import ru.khalilov.project2.models.Person;
 import ru.khalilov.project2.repositories.BookRepository;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -20,15 +21,20 @@ public class BookService {
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
-    public List<Book> showAllBooks(Integer page, String sortBy) {
-       if (sortBy!=null) {
-          return bookRepository.findAll(PageRequest.of(page, 2, Sort.by(sortBy))).getContent();
-       } else {
-           return bookRepository.findAll(PageRequest.of(page, 2)).getContent();
-       }
+
+    public List<Book> showAllBooks(Integer page, Integer count, String sortBy) {
+        if ((page == null || count == null) && (sortBy == null || sortBy.equals("empty"))) {
+            return bookRepository.findAll();
+        } else if ((page == null || count == null) && (sortBy != null && !sortBy.equals("empty"))) {
+            return bookRepository.findAll(Sort.by(sortBy));
+        } else if ((page != null && count != null) && (sortBy == null || sortBy.equals("empty"))) {
+            return bookRepository.findAll(PageRequest.of(page - 1, count)).getContent();
+        } else {
+            return bookRepository.findAll(PageRequest.of(page - 1, count, Sort.by(sortBy))).getContent();
+        }
     }
 
-    public Book showBook (int id) {
+    public Book showBook(int id) {
         return bookRepository.findById(id).orElse(null);
     }
 
@@ -49,15 +55,27 @@ public class BookService {
 
     @Transactional
     public void assignBook(Person person, int bookId) {
-        bookRepository.findById(bookId).ifPresent(book -> book.setOwner(person));
+        bookRepository.findById(bookId).ifPresent(book -> {
+                    book.setOwner(person);
+                    book.setRentDate(new Date());
+                }
+        );
     }
 
     @Transactional
     public void releaseBook(int bookId) {
-        bookRepository.findById(bookId).ifPresent(book -> book.setOwner(null));
+        bookRepository.findById(bookId).ifPresent(book -> {
+                    book.setOwner(null);
+                    book.setRentDate(null);
+                }
+        );
     }
 
     public Person showOwner(int bookId) {
         return bookRepository.findById(bookId).map(Book::getOwner).orElse(null);
+    }
+
+    public List<Book> findByTittleLike(String query) {
+        return bookRepository.findByTittleStartingWith(query);
     }
 }
